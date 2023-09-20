@@ -1,0 +1,10 @@
+- name: Configure Linux kernel modules for Containerd
+  blockinfile:
+    path: /etc/modules-load.d/containerd.conf
+    create: yes
+    block: |
+      overlay
+      br_netfilter
+
+- name: Load kernel modules
+  shell: modprobe br_netfilter overlay

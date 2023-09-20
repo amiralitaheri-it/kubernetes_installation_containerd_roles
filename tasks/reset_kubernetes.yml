@@ -1,0 +1,11 @@
+- name: Reset Kubernetes (kubeadm reset)
+  command: kubeadm reset
+  ignore_errors: yes
+
+- name: Remove ~/.kube/config file
+  command: rm -rf "{{ lookup('env','HOME') }}/.kube/config"
+  ignore_errors: yes
+
+- name: Unset KUBECONFIG environment variable
+  environment:
+    KUBECONFIG: ""
