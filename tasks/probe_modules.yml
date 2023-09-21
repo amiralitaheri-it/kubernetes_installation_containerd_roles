@@ -7,4 +7,7 @@
       br_netfilter
 
 - name: Load kernel modules
-  shell: modprobe br_netfilter overlay
+  modprobe:
+    name:
+      - br_netfilter
+      - overlay

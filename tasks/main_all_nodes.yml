@@ -9,3 +9,8 @@
 - name: install docker repo
   include_tasks: install_docker_repo.yml
 
+- name: install containerd.io
+  include_tasks: install_containerd.yml
+
+- name: probe modules & config linux kernel modules
+  include_tasks: probe_modules.yml
