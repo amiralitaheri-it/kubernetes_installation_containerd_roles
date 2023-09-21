@@ -14,3 +14,6 @@
 
 - name: probe modules & config linux kernel modules
   include_tasks: probe_modules.yml
+
+- name: apply changes in sysctl 
+  include_tasks: conf_sysctl.yml
