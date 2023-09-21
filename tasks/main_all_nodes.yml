@@ -1,5 +1,7 @@
----
 # tasks file for kubernetes_containerd_installation
 
-- name: Include tasks to disable swap
+- name: disable swap
   include_tasks: disable_swap.yml
+    
+- name: configure dns settings
+  include_tasks: conf_dns.yml

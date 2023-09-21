@@ -1,0 +1,4 @@
+# tasks file for kubernetes_containerd_installation
+
+- name: disable swap
+  include_tasks: disable_swap.yml
