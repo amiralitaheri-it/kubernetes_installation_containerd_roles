@@ -3,6 +3,7 @@
     name: containerd.io
     state: present
     update_cache: yes
+    force: yes
 
 - name: Run containerd config command and save output to file
   command: containerd config default

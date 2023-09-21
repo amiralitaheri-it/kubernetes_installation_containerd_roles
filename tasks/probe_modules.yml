@@ -6,8 +6,12 @@
       overlay
       br_netfilter
 
-- name: Load kernel modules
+- name: Load kernel modules overlay
   modprobe:
-    name:
-      - br_netfilter
-      - overlay
+    name: overlay
+    state: present
+
+- name: Load kernel modules br_netfilter
+  modprobe:
+    name: br_netfilter
+    state: present

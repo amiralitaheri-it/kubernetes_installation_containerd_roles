@@ -1,2 +1,14 @@
----
 # handlers file for kubernetes_containerd_installation
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: Restart containerd service
+  systemd:
+    name: containerd.service
+    state: restarted
+
+- name: Apply sysctl settings
+  sysctl:
+    sysctl_reload: yes
