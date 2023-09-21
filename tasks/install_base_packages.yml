@@ -1,0 +1,35 @@
+- name: Update package information
+  apt:
+    update_cache: yes
+
+- name: Install base packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - conntrack
+    state: present
+
+- name: Download and import Kubernetes GPG key
+  shell: |
+    curl -fsSL https://dl.k8s.io/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+    
+- name: Create Kubernetes APT repository file
+  shell: |
+    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+- name: Update package information
+  apt:
+    update_cache: yes
+
+- name: Install Kubernetes components
+  apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+
+- name: Mark Kubernetes components as held
+  command: apt-mark hold kubelet kubeadm kubectl

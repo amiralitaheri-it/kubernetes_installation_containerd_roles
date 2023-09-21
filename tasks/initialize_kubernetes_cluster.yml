@@ -1,0 +1,32 @@
+- name: Initialize Kubernetes Cluster with kubeadm
+      command: kubeadm init --control-plane-endpoint={{ master_ip }} --apiserver-advertise-address={{ master_ip }} --pod-network-cidr={{ pod_cidr }} --upload-certs
+      register: kubeadm_output
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      when: not kubeadm_output.failed
+
+- name: Save the Result of the command
+  local_action:
+    module: copy
+    content: "{{ kubeadm_output.stdout }}"
+    dest: /root/kubeadm_init_result.log
+    force: yes
+
+- name: Send Kubernetes Config File to All Nodes
+  hosts: all
+
+  tasks: 
+    - name: Copy Kubernetes Config Files
+      copy:
+        src: /root/kubeadm_init_result_kmaster.log
+        dest: /root/kubeadm_init_result_kmaster.log
+        force: yes
+
+- name: Add KUBECONFIG to root Bashrc
+  lineinfile:
+    path: /root/.bashrc
+    line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+    backup: yes
+
+- name: Defining KUBECONFIG with root user
+  shell: "export KUBECONFIG=/etc/kubernetes/admin.conf"

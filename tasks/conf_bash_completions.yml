@@ -1,0 +1,8 @@
+- name: Configure Bash completions for kubeadm
+  shell: kubeadm completion bash > /etc/bash_completion.d/kubeadm
+
+- name: Configure Bash completions for kubectl
+  shell: kubectl completion bash > /etc/bash_completion.d/kubectl
+
+- name: Reload Bash
+  command: bash -l

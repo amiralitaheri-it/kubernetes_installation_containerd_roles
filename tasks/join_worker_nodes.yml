@@ -1,0 +1,17 @@
+- name: Join Worker Nodes to Kubernetes Cluster
+  hosts: k8s_worker_nodes
+
+- name: Reset previous Kubernetes Cluster on this node
+  shell: "kubeadm reset -f"
+
+- name: Remove Previous Configs
+  file:
+    state: absent
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+
+- name: Extract Join Command from Log File
+  command: grep -E -o 'kubeadm join .+' /root/kubeadm_init_result_kmaster.log
+  register: join_command
+
+- name: Joining the Node to The Cluster
+  shell: "{{ join_command.stdout }}"
