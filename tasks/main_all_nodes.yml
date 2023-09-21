@@ -5,3 +5,7 @@
     
 - name: configure dns settings
   include_tasks: conf_dns.yml
+
+- name: install docker repo
+  include_tasks: install_docker_repo.yml
+

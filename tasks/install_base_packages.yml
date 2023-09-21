@@ -1,7 +1,3 @@
-- name: Update package information
-  apt:
-    update_cache: yes
-
 - name: Install base packages
   apt:
     name:
@@ -10,6 +6,7 @@
       - curl
       - conntrack
     state: present
+    update_cache: yes
 
 - name: Download and import Kubernetes GPG key
   shell: |

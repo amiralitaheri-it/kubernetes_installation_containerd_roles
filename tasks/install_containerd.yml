@@ -1,25 +1,23 @@
-- name: Update package cache
-  apt:
-    update_cache: yes
-
 - name: Install containerd.io
   apt:
     name: containerd.io
     state: present
+    update_cache: yes
 
-- name: Configure Containerd
-  command: containerd config default > /etc/containerd/config.toml
+- name: Run containerd config command and save output to file
+  command: containerd config default
+  register: containerd_config_output
 
-    - name: Modify Containerd configuration
+- name: Write containerd config output to file
+  ansible.builtin.copy:
+    content: "{{ containerd_config_output.stdout }}"
+    dest: /etc/containerd/config.toml
+
+- name: Modify Containerd configuration
   replace:
     path: /etc/containerd/config.toml
     regexp: 'SystemdCgroup = false'
     replace: 'SystemCgroup = true'
-
-- name: Reload systemd daemon
-  command: systemctl daemon-reload
-
-- name: Restart Containerd service
-  systemd:
-    name: containerd
-    state: restarted
+  notify:
+    - Reload systemd daemon
+    - Restart containerd service

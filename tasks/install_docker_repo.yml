@@ -15,12 +15,13 @@
     state: directory
     mode: '0755'
 
-- name: Download Docker GPG Key
-  get_url:
+- name: Download Docker GPG key
+  uri:
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /tmp/docker.gpg
-    mode: '0644'
-    force: yes
+    owner: root
+    group: root
+    mode: 0600
 
 - name: Check Existence of Docker GPG-Key
   stat:
@@ -28,7 +29,7 @@
   register: result_key
 
 - name: Install Docker GPG Key
-  shell: 'gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.gpg'
+  shell: 'gpg --dearmor -o /etc/apt/keyrings/docker.gpg'
   when: not result_key.stat.exists
   args:
     executable: /bin/bash
@@ -38,9 +39,15 @@
     path: /etc/apt/keyrings/docker.gpg
     mode: '0644'
 
-- name: Configure Docker repository
-  shell: |
-    echo \
-      "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+- name: Add Docker repository to sources.list
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/docker.list
+    create: yes
+    line: 'deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+
+      #- name: Configure Docker repository
+      #shell: |
+      #echo \
+      #"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      #"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+      #sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
