@@ -1,2 +1,4 @@
 ---
 # vars file for kubernetes_containerd_installation
+master_ip: ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0])
+pod_cidr: 10.244.0.0/16

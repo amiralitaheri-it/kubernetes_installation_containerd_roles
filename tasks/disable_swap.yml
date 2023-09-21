@@ -2,4 +2,7 @@
   command: swapoff -a
 
 - name: Comment out swap entry in /etc/fstab
-  command: sed -i '/swap/s/^\//\#\//g' /etc/fstab
+  lineinfile:
+    path: /etc/fstab
+    regexp: '^/swap'
+    line: '#/swap'

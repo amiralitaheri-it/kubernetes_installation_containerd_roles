@@ -1,0 +1,46 @@
+- name: Uninstall all conflicting packages
+  apt:
+    name:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+
+- name: Create /etc/apt/keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Docker GPG Key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /tmp/docker.gpg
+    mode: '0644'
+    force: yes
+
+- name: Check Existence of Docker GPG-Key
+  stat:
+    path: /usr/share/keyrings/docker-archive-keyring.gpg
+  register: result_key
+
+- name: Install Docker GPG Key
+  shell: 'gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.gpg'
+  when: not result_key.stat.exists
+  args:
+    executable: /bin/bash
+
+- name: Set permissions for Docker GPG key
+  file:
+    path: /etc/apt/keyrings/docker.gpg
+    mode: '0644'
+
+- name: Configure Docker repository
+  shell: |
+    echo \
+      "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
