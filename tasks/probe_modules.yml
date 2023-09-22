@@ -6,12 +6,10 @@
       overlay
       br_netfilter
 
-- name: Load kernel modules overlay
+- name: Load kernel modules
   modprobe:
-    name: overlay
+    name: "{{ item }}"
     state: present
-
-- name: Load kernel modules br_netfilter
-  modprobe:
-    name: br_netfilter
-    state: present
+  loop:
+    - br_netfilter
+    - overlay

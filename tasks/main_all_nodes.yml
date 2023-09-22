@@ -17,3 +17,9 @@
 
 - name: apply changes in sysctl 
   include_tasks: conf_sysctl.yml
+
+- name: install base packages include kubeadm,kubectl,kubelet
+  include_tasks: install_kubernetes_components.yml
+
+- name: install bash completions
+  include_tasks: conf_bash_completions.yml

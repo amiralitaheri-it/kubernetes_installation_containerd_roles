@@ -3,6 +3,3 @@
 
 - name: Configure Bash completions for kubectl
   shell: kubectl completion bash > /etc/bash_completion.d/kubectl
-
-- name: Reload Bash
-  command: bash -l

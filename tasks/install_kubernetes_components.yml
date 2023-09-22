@@ -44,11 +44,13 @@
       - kubeadm
       - kubectl
     state: present
+    update_cache: yes
 
-- name: Mark Kubernetes components as held
+- name: Hold packages
   dpkg_selections:
-    name:
-      - kubelet
-      - kubeadm
-      - kubectl
+    name: "{{ item }}"
     selection: hold
+  loop: 
+    - kubeadm
+    - kubelet
+    - kubectl
