@@ -8,17 +8,34 @@
     state: present
     update_cache: yes
 
-- name: Download and import Kubernetes GPG key
-  shell: |
-    curl -fsSL https://dl.k8s.io/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-    
-- name: Create Kubernetes APT repository file
-  shell: |
-    echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+- name: Check Existence of Kubernetes GPG-Key
+  stat:
+    path: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+  register: kubernetes_gpg_stat
 
-- name: Update package information
-  apt:
-    update_cache: yes
+- name: Download Kubernetes GPG key if it doesn't exist
+  uri:
+    url: https://dl.k8s.io/apt/doc/apt-key.gpg
+    dest: /tmp/kubernetes.gpg
+    owner: root
+    group: root
+    mode: 0600
+  when: not kubernetes_gpg_stat.stat.exists
+
+- name: Import gpg key
+  shell: "cat /tmp/kubernetes.gpg | gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg --yes"
+  when: not kubernetes_gpg_stat.stat.exists
+
+- name: Delete /tmp/kubernetes.gpg file
+  file:
+    path: /tmp/kubernetes.gpg
+    state: absent
+  when: not kubernetes_gpg_stat.stat.exists
+
+- name: Copy Kubernetes repository configuration
+  copy:
+    content: "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
+    dest: /etc/apt/sources.list.d/kubernetes.list
 
 - name: Install Kubernetes components
   apt:
@@ -29,4 +46,9 @@
     state: present
 
 - name: Mark Kubernetes components as held
-  command: apt-mark hold kubelet kubeadm kubectl
+  dpkg_selections:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    selection: hold

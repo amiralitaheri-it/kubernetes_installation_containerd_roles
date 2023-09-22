@@ -9,11 +9,17 @@
       - runc
     state: absent
 
+- name: Check if /etc/apt/keyrings/docker.gpg exists
+  stat:
+    path: /etc/apt/keyrings/docker.gpg
+  register: keyrings_directory
+
 - name: Create /etc/apt/keyrings directory
   file:
-    path: /etc/apt/keyrings
+    path: /etc/apt/keyrings/docker.gpg
     state: directory
     mode: '0755'
+  when: not keyrings_directory.stat.exists
 
 - name: Check Existence of Docker GPG-Key
   stat:
@@ -31,6 +37,13 @@
 
 - name: Import gpg key
   shell: "cat /tmp/docker.gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg --yes"
+  when: not docker_gpg_stat.stat.exists
+
+- name: Delete /tmp/docker.gpg file
+  file:
+    path: /tmp/docker.gpg
+    state: absent
+  when: not docker_gpg_stat.stat.exists
 
 - name: Create Docker repository line
   template:
