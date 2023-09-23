@@ -1,28 +1,31 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+A Kubernetes Ansible role for installation is a pre-defined set of tasks and configurations that can be used with Ansible to automate the installation and configuration of Kubernetes on target machines. Ansible roles are a way to organize and package tasks, templates, and variables into reusable units, making it easier to manage complex configurations and deployments.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Debian base server
 
-Role Variables
---------------
+Example Hosts
+----------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```
+[k8s_master_nodes]
+k8smaster ansible_host=192.168.177.133
 
-Dependencies
-------------
+[k8s_other_master_nodes]
+master2 ansible_host=192.168.177.144
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+[k8s_worker_nodes]
+worker1 ansible_host=192.168.177.142
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+```
 - name: Install kubernetes cluster with kubeadm on ubuntu with containerd run-time
   hosts: all
   become: yes
@@ -74,14 +77,9 @@ Including an example of how to use your role (for instance, with variables passe
       import_role:
         name: kubernetes_containerd_installation
         tasks_from: join_worker_nodes.yml
-
-
-License
--------
-
-BSD
+```
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Amir Ali Taheri :)
