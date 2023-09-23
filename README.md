@@ -23,9 +23,58 @@ Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- name: Install kubernetes cluster with kubeadm on ubuntu with containerd run-time
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Run tasks for all nodes
+      import_role:
+        name: kubernetes_containerd_installation
+        tasks_from: main_all_nodes.yml
+
+- name: Initialize k8s cluster on master node
+  hosts: k8s_master_nodes
+  become: yes
+
+  tasks:
+    - name: Run tasks for main master node
+      import_role:
+        name: kubernetes_containerd_installation
+        tasks_from: main_master_nodes.yml
+
+- name: Send kubeadm init result file to all nodes
+  hosts:
+    - k8s_other_master_nodes
+    - k8s_worker_nodes
+  become: yes
+
+  tasks:
+    - name: Run tasks for sending files to nodes
+      import_role:
+        name: kubernetes_containerd_installation
+        tasks_from: send_init_result.yml
+
+- name: Join master nodes into the cluster
+  hosts: k8s_other_master_nodes
+    become: yes
+
+  tasks:
+    - name: Run tasks for join master nodes into the cluster
+      import_role:
+        name: kubernetes_containerd_installation
+        tasks_from: join_master_nodes.yml
+
+- name: Join worker nodes into the cluster
+  hosts: k8s_worker_nodes
+  become: yes
+
+  tasks:
+    - name: Run tasks for join worker nodes into the cluster
+      import_role:
+        name: kubernetes_containerd_installation
+        tasks_from: join_worker_nodes.yml
+
 
 License
 -------
