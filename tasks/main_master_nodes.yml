@@ -1,0 +1,5 @@
+- name: reset prev kuber cluster
+  include_tasks: reset_kubernetes.yml
+
+- name: initialize kubernetes cluster on master node
+  include_tasks: initialize_kubernetes_cluster.yml

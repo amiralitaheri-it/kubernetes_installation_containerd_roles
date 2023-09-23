@@ -9,15 +9,16 @@
   register: containerd_config_output
 
 - name: Write containerd config output to file
-  ansible.builtin.copy:
+  copy:
     content: "{{ containerd_config_output.stdout }}"
     dest: /etc/containerd/config.toml
+    force: yes
 
 - name: Modify Containerd configuration
   replace:
     path: /etc/containerd/config.toml
     regexp: 'SystemdCgroup = false'
-    replace: 'SystemCgroup = true'
+    replace: 'SystemdCgroup = true'
   notify:
     - Reload systemd daemon
     - Restart containerd service

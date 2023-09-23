@@ -1,0 +1,5 @@
+- name: Copy Kubernetes Config Files
+  copy:
+    src: /home/ansible/kubeadm_init_result.log
+    dest: /root/kubeadm_init_result.log
+    force: yes

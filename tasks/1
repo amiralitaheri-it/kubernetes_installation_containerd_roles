@@ -1,0 +1,24 @@
+- name: Initialize Kubernetes Cluster with kubeadm
+  command: kubeadm init --upload-certs --apiserver-advertise-address {{ ansible_default_ipv4.address }} --control-plane-endpoint {{ ansible_default_ipv4.address }}:6443 --pod-network-cidr={{ pod_cidr }}
+  register: kubeadm_output
+
+- name: Save the Result of the command
+  copy:
+    content: "{{ kubeadm_output.stdout }}"
+    dest: /root/kubeadm_init_result.log
+    force: yes
+
+- name: Copy Kubernetes Config Files
+  fetch:
+    src: /root/kubeadm_init_result.log
+    dest: /root/kubeadm_init_result.log
+    force: yes
+
+- name: Add KUBECONFIG to root Bashrc
+  lineinfile:
+    path: /root/.bashrc
+    line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+    backup: yes
+
+- name: Defining KUBECONFIG with root user
+  command: "export KUBECONFIG=/etc/kubernetes/admin.conf"

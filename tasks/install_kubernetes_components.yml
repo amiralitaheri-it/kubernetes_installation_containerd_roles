@@ -1,48 +1,33 @@
-- name: Install base packages
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - conntrack
-    state: present
-    update_cache: yes
-
-- name: Check Existence of Kubernetes GPG-Key
-  stat:
-    path: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-  register: kubernetes_gpg_stat
-
-- name: Download Kubernetes GPG key if it doesn't exist
+- name: Download Kubernetes GPG key
   uri:
-    url: https://dl.k8s.io/apt/doc/apt-key.gpg
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     dest: /tmp/kubernetes.gpg
     owner: root
     group: root
     mode: 0600
-  when: not kubernetes_gpg_stat.stat.exists
 
 - name: Import gpg key
-  shell: "cat /tmp/kubernetes.gpg | gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg --yes"
-  when: not kubernetes_gpg_stat.stat.exists
+  shell: "cat /tmp/kubernetes.gpg | gpg --dearmour -o /etc/apt/trusted.gpg.d/kubernetes-xenial.gpg --yes"
 
 - name: Delete /tmp/kubernetes.gpg file
   file:
     path: /tmp/kubernetes.gpg
     state: absent
-  when: not kubernetes_gpg_stat.stat.exists
 
-- name: Copy Kubernetes repository configuration
-  copy:
-    content: "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
-    dest: /etc/apt/sources.list.d/kubernetes.list
+- name: Add Kubernetes APT repository
+  apt_repository:
+    repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    state: present
+
+      #- name: Copy Kubernetes repository configuration
+      #copy:
+      #content: "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
+      #dest: /etc/apt/sources.list.d/kubernetes.list
+      #force: yes
 
 - name: Install Kubernetes components
   apt:
-    name:
-      - kubelet
-      - kubeadm
-      - kubectl
+    name: "{{ kuber_component_packages }}"
     state: present
     update_cache: yes
 
@@ -50,7 +35,4 @@
   dpkg_selections:
     name: "{{ item }}"
     selection: hold
-  loop: 
-    - kubeadm
-    - kubelet
-    - kubectl
+  loop: "{{ kuber_component_packages }}" 

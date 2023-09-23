@@ -1,26 +1,13 @@
 - name: Initialize Kubernetes Cluster with kubeadm
-      command: kubeadm init --control-plane-endpoint={{ master_ip }} --apiserver-advertise-address={{ master_ip }} --pod-network-cidr={{ pod_cidr }} --upload-certs
-      register: kubeadm_output
-      environment:
-        KUBECONFIG: /etc/kubernetes/admin.conf
-      when: not kubeadm_output.failed
+  shell: kubeadm init --upload-certs --apiserver-advertise-address {{ ansible_default_ipv4.address }} --control-plane-endpoint {{ ansible_default_ipv4.address }}:6443 --pod-network-cidr={{ pod_cidr }}
+  register: kubeadm_output
 
-- name: Save the Result of the command
+- name: Save the Result of the kubeadm init command
   local_action:
     module: copy
     content: "{{ kubeadm_output.stdout }}"
-    dest: /root/kubeadm_init_result.log
+    dest: /home/ansible/kubeadm_init_result.log
     force: yes
-
-- name: Send Kubernetes Config File to All Nodes
-  hosts: all
-
-  tasks: 
-    - name: Copy Kubernetes Config Files
-      copy:
-        src: /root/kubeadm_init_result_kmaster.log
-        dest: /root/kubeadm_init_result_kmaster.log
-        force: yes
 
 - name: Add KUBECONFIG to root Bashrc
   lineinfile:
@@ -28,5 +15,19 @@
     line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
     backup: yes
 
-- name: Defining KUBECONFIG with root user
-  shell: "export KUBECONFIG=/etc/kubernetes/admin.conf"
+- name: Create kubeconfig.sh script
+  copy:
+    content: |
+      #!/bin/bash
+      export KUBECONFIG=/etc/kubernetes/admin.conf
+      kubectl apply -f https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml > /dev/null 2>&1
+    dest: /tmp/kubeconfig.sh
+    mode: '0755'
+
+- name: Run kubeconfig.sh
+  script: /tmp/kubeconfig.sh
+
+- name: Remove kubeconfig.sh
+  file:
+    path: /tmp/kubeconfig.sh
+    state: absent

@@ -1,6 +1,15 @@
-- name: Extract Join Command from Log File
-  command: grep -E -o 'kubeadm join .+' /root/kubeadm_init_result_kmaster.log
-  register: join_command
+- name: reset prev kuber settings
+  include_tasks: reset_kubernetes.yml
 
-- name: Joining the Node to The Cluster
-  shell: "{{ join_command.stdout }}"
+- name: extract worker's join command
+  shell: awk '/kubeadm join/{count++; if (count == 2) {print; getline; print; exit;}}' /root/kubeadm_init_result.log
+  register: worker_join_command
+
+- name: Execute kubeadm worker join command
+  shell: "{{ worker_join_command.stdout }}"
+  when: worker_join_command.stdout_lines | length > 0
+
+- name: Delete the worker join command file
+  file:
+    path: /root/kubeadm_init_result.log
+    state: absent

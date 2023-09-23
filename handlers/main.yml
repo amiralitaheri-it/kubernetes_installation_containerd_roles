@@ -10,5 +10,4 @@
     state: restarted
 
 - name: Apply sysctl settings
-  sysctl:
-    sysctl_reload: yes
+  command: sysctl --system

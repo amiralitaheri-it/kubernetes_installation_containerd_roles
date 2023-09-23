@@ -1,51 +1,33 @@
-- name: Uninstall all conflicting packages
+- name: Install base packages
   apt:
-    name:
-      - docker.io
-      - docker-doc
-      - docker-compose
-      - podman-docker
-      - containerd
-      - runc
-    state: absent
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop: "{{ base_install_packages }}"
 
-- name: Check if /etc/apt/keyrings/docker.gpg exists
-  stat:
-    path: /etc/apt/keyrings/docker.gpg
-  register: keyrings_directory
-
-- name: Create /etc/apt/keyrings directory
-  file:
-    path: /etc/apt/keyrings/docker.gpg
-    state: directory
-    mode: '0755'
-  when: not keyrings_directory.stat.exists
-
-- name: Check Existence of Docker GPG-Key
-  stat:
-    path: /etc/apt/keyrings/docker.gpg
-  register: docker_gpg_stat
-
-- name: Download Docker GPG key if it doesn't exist
+- name: Download Docker GPG key
   uri:
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /tmp/docker.gpg
     owner: root
     group: root
     mode: 0600
-  when: not docker_gpg_stat.stat.exists
 
 - name: Import gpg key
-  shell: "cat /tmp/docker.gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg --yes"
-  when: not docker_gpg_stat.stat.exists
+  shell: "cat /tmp/docker.gpg | gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg --yes"
 
 - name: Delete /tmp/docker.gpg file
   file:
     path: /tmp/docker.gpg
     state: absent
-  when: not docker_gpg_stat.stat.exists
 
-- name: Create Docker repository line
-  template:
-    src: docker_repository.j2
-    dest: /etc/apt/sources.list.d/docker.list
+      
+- name: Add Docker APT repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+
+      #- name: Create Docker repository line
+      #template:
+      #src: docker_repository.j2
+      #dest: /etc/apt/sources.list.d/docker.list

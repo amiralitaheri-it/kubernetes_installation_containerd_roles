@@ -7,6 +7,10 @@
     state: absent
     dest: "{{ ansible_env.HOME }}/.kube/config"
 
-- name: Unset KUBECONFIG environment variable
-  environment:
-    KUBECONFIG: ""
+- name: Remove Kubernetes Configs and data
+  file:
+    state: absent
+    dest: "/etc/kubernetes/"
+
+- name: Unsetenv KUBECONFIG environment variable
+  shell: unset KUBECONFIG
