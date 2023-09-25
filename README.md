@@ -5,14 +5,14 @@ A Kubernetes Ansible role for installation is a pre-defined set of tasks and con
 
 Requirements
 ------------
-
+kubernetes.core module : ansible-galaxy collection install kubernetes.core
 Debian base server
 
 Example Hosts
 ----------------
 
 ```
-[k8s_master_nodes]
+[k8s_master_node]
 k8smaster ansible_host=192.168.177.133
 
 [k8s_other_master_nodes]
@@ -20,6 +20,7 @@ master2 ansible_host=192.168.177.144
 
 [k8s_worker_nodes]
 worker1 ansible_host=192.168.177.142
+worker2 ansible_host=192.168.177.143
 ```
 
 Example Playbook
@@ -37,7 +38,7 @@ Example Playbook
         tasks_from: main_all_nodes.yml
 
 - name: Initialize k8s cluster on master node
-  hosts: k8s_master_nodes
+  hosts: k8s_master_node
   become: yes
 
   tasks:
@@ -77,6 +78,16 @@ Example Playbook
       import_role:
         name: kubernetes_containerd_installation
         tasks_from: join_worker_nodes.yml
+
+- name: Deploy Nginx deployment
+  hosts: k8s_master_node
+  become: yes
+
+  tasks:
+    - name: Run tasks for Deploy Nginx deployment
+      import_role:
+        name: kubernetes_containerd_installation
+        tasks_from: deploy_nginx_pod.yml
 ```
 
 Author Information
