@@ -5,7 +5,11 @@ A Kubernetes Ansible role for installation is a pre-defined set of tasks and con
 
 Requirements
 ------------
-kubernetes.core module : ansible-galaxy collection install kubernetes.core
+kubernetes.core module
+```
+ansible-galaxy collection install kubernetes.core
+```
+
 Debian base server
 
 Example Hosts
