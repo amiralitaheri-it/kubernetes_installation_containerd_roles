@@ -82,16 +82,6 @@ Example Playbook
       import_role:
         name: kubernetes_containerd_installation
         tasks_from: join_worker_nodes.yml
-
-- name: Deploy Nginx deployment
-  hosts: k8s_master_node
-  become: yes
-
-  tasks:
-    - name: Run tasks for Deploy Nginx deployment
-      import_role:
-        name: kubernetes_containerd_installation
-        tasks_from: deploy_nginx_pod.yml
 ```
 
 Author Information
