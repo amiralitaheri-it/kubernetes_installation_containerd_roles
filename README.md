@@ -6,7 +6,7 @@ A Kubernetes Ansible role for installation is a pre-defined set of tasks and con
 Install roles
 ------------
 ```
-ansible-galaxy collection install community.kubernetes
+ansible-galaxy install amiralidevmoon.kubernetes_installation_containerd_roles
 ```
 
 Requirements
