@@ -13,6 +13,7 @@
     content: "{{ containerd_config_output.stdout }}"
     dest: /etc/containerd/config.toml
     force: yes
+    backup: yes
 
 - name: Modify Containerd configuration
   replace:

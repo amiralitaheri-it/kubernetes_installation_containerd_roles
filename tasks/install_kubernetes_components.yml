@@ -19,11 +19,11 @@
     repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
     state: present
 
-      #- name: Copy Kubernetes repository configuration
-      #copy:
-      #content: "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
-      #dest: /etc/apt/sources.list.d/kubernetes.list
-      #force: yes
+#- name: Copy Kubernetes repository configuration
+  #copy:
+    #content: "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
+    #dest: /etc/apt/sources.list.d/kubernetes.list
+    #force: yes
 
 - name: Install Kubernetes components
   apt:

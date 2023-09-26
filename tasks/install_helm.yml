@@ -1,0 +1,22 @@
+- name: Download the Helm installer
+  uri:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh
+    force: yes
+
+- name: Make the Helm installer executable
+  file:
+    path: /tmp/get_helm.sh
+    state: file
+    mode: 0700
+
+- name: Install Helm
+  command: /tmp/get_helm.sh
+  register: helm_install
+
+- name: Remove the Helm installer script (if Helm is installed)
+  file:
+    path: /tmp/get_helm.sh
+    state: absent
+  when:
+    - helm_install.stdout is not search("Failed to download")

@@ -3,6 +3,7 @@
     path: /etc/sysctl.conf
     regexp: '#net.ipv4.ip_forward=1'
     replace: 'net.ipv4.ip_forward=1'
+    backup: yes
 
 - name: Create custom sysctl configuration file
   blockinfile:

@@ -5,6 +5,7 @@
     block: |
       overlay
       br_netfilter
+    backup: yes
 
 - name: Load kernel modules
   modprobe:

@@ -5,7 +5,7 @@
   shell: awk '/kubeadm join/{y=1}y && /\\/ {print;next}y && !/\\/ {print;exit}' /root/kubeadm_init_result.log
   register: master_join_command
 
-- name: Execute kubeadm join command
+- name: Execute kubeadm master join command
   shell: "{{ master_join_command.stdout }}"
   when: master_join_command.stdout_lines | length > 0
 

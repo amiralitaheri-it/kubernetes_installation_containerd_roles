@@ -6,3 +6,4 @@
     path: /etc/fstab
     regexp: '^(.*\sswap\s+sw\s+0\s+0)$'
     replace: '#\1'
+    backup: yes

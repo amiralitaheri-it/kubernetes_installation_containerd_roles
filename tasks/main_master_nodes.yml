@@ -3,3 +3,6 @@
 
 - name: initialize kubernetes cluster on master node
   include_tasks: initialize_kubernetes_cluster.yml
+
+- name: Helm installation through script
+  include_tasks: install_helm.yml

@@ -1,7 +1,17 @@
+- name: Get current timestamp
+  command: date +"%Y%m%d%H%M%S"
+  register: timestamp
+
+- name: Create backup with timestamp
+  copy:
+    src: /etc/resolv.conf
+    dest: "/etc/resolv.conf.backup_{{ timestamp.stdout }}"
+
 - name: Remove /etc/resolv.conf
   file:
     path: /etc/resolv.conf
     state: absent
+    force: yes
 
 - name: Create /etc/resolv.conf with custom DNS nameservers
   copy:
