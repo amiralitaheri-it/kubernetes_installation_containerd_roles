@@ -11,7 +11,7 @@ ansible-galaxy collection install community.kubernetes
 
 Requirements
 ------------
-kubernetes.core module
+kubernetes.core module only for deploy nginx pods
 ```
 ansible-galaxy collection install kubernetes.core
 ```
