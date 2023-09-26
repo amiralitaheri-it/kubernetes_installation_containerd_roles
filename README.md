@@ -84,6 +84,38 @@ Example Playbook
         tasks_from: join_worker_nodes.yml
 ```
 
+Example Deploy Nginx Pods Playbook
+----------------
+```
+- hosts: k8s_master_node
+  become: yes
+  collections:
+    - kubernetes.core
+  tasks:
+  - name: Create an NGINX deployment
+    k8s:
+      state: present
+      definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: nginx-deployment
+          namespace: default
+        spec:
+          replicas: 4
+          selector:
+            matchLabels:
+              app: nginx
+          template:
+            metadata:
+              labels:
+                app: nginx
+            spec:
+              containers:
+              - name: nginx
+                image: nginx:1.21.1
+      kubeconfig: /etc/kubernetes/admin.conf
+```
 Author Information
 ------------------
 
