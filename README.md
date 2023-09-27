@@ -5,14 +5,14 @@ A Kubernetes Ansible role for installation is a pre-defined set of tasks and con
 
 Install roles
 ------------
-```
+```yaml
 ansible-galaxy install amiralidevmoon.kubernetes_installation_containerd_roles
 ```
 
 Requirements
 ------------
 kubernetes.core module only for deploy nginx pods
-```
+```yaml
 ansible-galaxy collection install kubernetes.core
 ```
 
@@ -21,7 +21,7 @@ Debian base server
 Example Hosts
 ----------------
 
-```
+```yaml
 [k8s_master_node]
 k8smaster ansible_host=192.168.177.133
 
@@ -36,7 +36,7 @@ worker2 ansible_host=192.168.177.143
 Example Playbook
 ----------------
 
-```
+```yaml
 - name: Install kubernetes cluster with kubeadm on ubuntu with containerd run-time
   hosts: all
   become: yes
@@ -92,7 +92,7 @@ Example Playbook
 
 Example Deploy Nginx Pods Playbook
 ----------------
-```
+```yaml
 - hosts: k8s_master_node
   become: yes
   collections:
